@@ -1,0 +1,7 @@
+.idea/
+venv/
+__pycache__/
+crawler_data
+training_data/
+.DS_Store
+bertSeqCls

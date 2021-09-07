@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<style>
+    body {
+        background-image: url('/static/background.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        opacity: 1;
+    }
+    #result{
+        text-align: center;
+    }
+</style>
+
+<script>
+    function predict() {
+        var post = document.getElementById('post').value
+        var comment = document.getElementById('comment').value
+        $.ajax({
+            url : '/predict',
+            data : {
+                post : post,
+                comment : comment
+            },
+            type : 'post',
+            success : function (result) {
+                if(result == '2'){
+                    output = 'Irrelevant';
+                    document.getElementById('result').style.color = 'gray';
+                }
+                else if(result == '1'){
+                    output = 'Support';
+                    document.getElementById('result').style.color = 'green';
+                }
+                else if(result == '0'){
+                    output = 'Opposition';
+                    document.getElementById('result').style.color = 'red';
+                }
+                document.getElementById('result').innerHTML = '<h2>' + output + '</h2>';
+
+            }
+        })
+    }
+</script>
+
+<body>
+<center><h1>Model Test</h1></center>
+<form>
+    <div class="form-group">
+        <h2><label for="post">Post : </label></h2>
+        <textarea class="form-control" id="post" rows="5" ></textarea>
+    </div>
+    <div class="form-group">
+        <h2><label for="comment">Comment : </label></h2>
+        <textarea class="form-control" id="comment" rows="3" ></textarea>
+    </div>
+    <center><button type="button" class="btn btn-primary" onclick="predict()" style="font-size: 24px">Predict</button></center>
+</form><br>
+
+<h1>result : </h1>
+<div id="result"></div>
+
+</body>
+</html>
