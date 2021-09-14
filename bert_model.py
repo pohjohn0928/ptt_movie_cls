@@ -12,9 +12,12 @@ class BertSeqCls:
     def __init__(self):
         self.model_name = 'bert-base-chinese'
         self.tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        self.model = TFBertForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
+        self.model = None
         self.batch_size = 5
         self.checkpoint_path = 'bertSeqCls/movie_comment.hdf5'
+
+    def load_pretrain(self):
+        self.model = TFBertForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
 
     def map_example_to_dict(self, input_ids, attention_masks, token_type_ids, label):
         return {
@@ -24,6 +27,7 @@ class BertSeqCls:
                }, label
 
     def fit(self, main_contents, comments, labels):
+        self.load_pretrain()
         inputs = self.tokenizer(main_contents, comments, return_tensors="tf", max_length=512,
                                 padding='max_length', truncation=True)
         labels = tf.reshape(np.array(labels), (-1, 1))
@@ -92,6 +96,9 @@ class BertSeqCls:
                      'attention_mask': inputs['token_type_ids']}
         batch = [dict(input_dic)]
         input_data = {'instances': batch}
+        print(input_data)
         r = requests.post("http://localhost:8501/v1/models/bert_model:predict", data=json.dumps(input_data))
+        print(r.json())
         predict = r.json()['predictions'][0]
+        print(predict)
         return np.argmax(predict)

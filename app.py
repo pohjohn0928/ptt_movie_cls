@@ -13,6 +13,8 @@ def home():
 def predict():
     post = request.values['post']
     comment = request.values['comment']
+    print(post)
+    print(comment)
     model = BertSeqCls()
     pre = model.pre_api(post, comment)
     return str(pre)
