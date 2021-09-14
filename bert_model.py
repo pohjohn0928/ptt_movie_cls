@@ -97,7 +97,7 @@ class BertSeqCls:
         batch = [dict(input_dic)]
         input_data = {'instances': batch}
         print(input_data)
-        r = requests.post("http://localhost:8501/v1/models/bert_model:predict", data=json.dumps(input_data))
+        r = requests.post("http://host.docker.internal:8501/v1/models/bert_model:predict", data=json.dumps(input_data))
         print(r.json())
         predict = r.json()['predictions'][0]
         print(predict)
