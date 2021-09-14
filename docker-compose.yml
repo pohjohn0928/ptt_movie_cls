@@ -1,9 +1,22 @@
-version: 3.9
+version: "3.9"
 
 services:
-  model:
-    build: .
+  model_serving:
+    image: "tensorflow/serving"
+    environment:
+      MODEL_NAME: "bert_model"
     ports:
-      - "8000:8000"
+      - "8501:8501"
     volumes:
-      - /home/taisiangbo/ptt_movie_cls:/app
+      - type: bind
+        source: /Users/johnpoh/Desktop/movie_comment/bert_model/saved_model
+        target: /models/bert_model
+
+  model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8800:8800"
+    volumes:
+      - /Users/johnpoh/Desktop/movie_comment:/app

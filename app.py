@@ -14,9 +14,9 @@ def predict():
     post = request.values['post']
     comment = request.values['comment']
     model = BertSeqCls()
-    pre = model.predict([post], [comment])
-    return str(pre[0])
+    pre = model.pre_api(post, comment)
+    return str(pre)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8800, debug=True)

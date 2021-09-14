@@ -1,3 +1,6 @@
+import json
+
+import requests
 import tensorflow as tf
 from transformers import BertTokenizer, TFBertForSequenceClassification
 from tensorflow.keras.callbacks import EarlyStopping
@@ -55,8 +58,9 @@ class BertSeqCls:
         self.fit(main_contents, comments, labels)
 
     def load(self):
-        self.model = TFBertForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
-        self.model.load_weights(self.checkpoint_path)
+        model = TFBertForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
+        model.load_weights(self.checkpoint_path)
+        return model
 
     def map_test_example_to_dict(self, input_ids, attention_masks, token_type_ids):
         return {
@@ -69,12 +73,25 @@ class BertSeqCls:
         inputs = self.tokenizer(main_contents, comments, return_tensors="tf", max_length=512,
                                 padding='max_length', truncation=True)
         bert_input = tf.data.Dataset.from_tensor_slices(
-            (inputs['input_ids'], inputs['token_type_ids'], inputs['attention_mask'])).map(self.map_test_example_to_dict)
+            (inputs['input_ids'], inputs['token_type_ids'], inputs['attention_mask'])).map(
+            self.map_test_example_to_dict)
 
         bert_input = bert_input.batch(self.batch_size)
-        self.load()
-        predicts = self.model.predict(bert_input)[0]
+        model = self.load()
+        predicts = model.predict(bert_input)[0]
+        print(predicts)
         pred = []
         for pre in predicts:
             pred.append(np.argmax(pre))
         return pred
+
+    def pre_api(self, main_contents, comments):
+        inputs = self.tokenizer(main_contents, comments)
+        input_dic = {'input_ids': inputs['input_ids'],
+                     'token_type_ids': inputs['attention_mask'],
+                     'attention_mask': inputs['token_type_ids']}
+        batch = [dict(input_dic)]
+        input_data = {'instances': batch}
+        r = requests.post("http://localhost:8501/v1/models/bert_model:predict", data=json.dumps(input_data))
+        predict = r.json()['predictions'][0]
+        return np.argmax(predict)

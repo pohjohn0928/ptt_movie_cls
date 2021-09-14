@@ -5,3 +5,6 @@ crawler_data
 training_data/
 .DS_Store
 bertSeqCls
+test.py
+bert_model
+*.csv

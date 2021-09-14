@@ -1,14 +1,32 @@
+from transformers import BertTokenizer, AutoTokenizer
+
 from bert_model import BertSeqCls
+from tensorflow import keras
+import tensorflow as tf
+import numpy as np
+
+# [[-1.6710131,  3.3942356, -1.5105639]]
 
 if __name__ == '__main__':
+    def test():
+        model = BertSeqCls()
+        model = model.load()
+        tokenizer = BertTokenizer.from_pretrained("bert-base-chinese")
+        inputs = tokenizer('這部電影很好看', '推！真的很讚',
+                           add_special_tokens=True,
+                           max_length=512)
+        input_ids, input_segments, input_masks = [], [], []
+        input_ids.append(inputs['input_ids'])
+        input_segments.append(inputs['token_type_ids'])
+        input_masks.append(inputs['attention_mask'])
+
+        input_ = [np.array(input_ids, dtype=np.int32),
+                  np.array(input_segments, dtype=np.int32),
+                  np.array(input_masks, dtype=np.int32)]
+        print(input_)
+        pre = model.predict(input_)
+        print(pre)
+
     model = BertSeqCls()
-    # model.train('training_data/movie.csv')
-
-    pre = model.predict(['這部電影很好看', '這部電影很好看', '剛剛看完絕地救援真的是一部讓人感到舒服的好片子但想問一下'
-                                               '像片中麥特在七個月前的結實飽滿身材到七個月後的苗條身材演員要怎麼演是要先演七個月後再吃胖'
-                                               '練壯演七個月前還是七個月前演完再開始狂瘦演七個月後而且麥特是怎麼在短時間內瘦這麼快的'
-                                               '(我看至少也瘦了20公斤)畢竟拍片時間拉越長就是燒越多錢而演員這樣短期瘦身對身體好嗎?'
-                                               '大家一起討論討論?'],
-                        ['推!真的很讚', '一般般吧，個人覺得普通', '我猜先瘦的情況演後面在長肌肉演前面順便接演包恩'])
+    pre = model.predict(['這部電影很好看'], ['推！真的很讚'])
     print(pre)
-
