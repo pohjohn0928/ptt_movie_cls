@@ -19,7 +19,7 @@ class BertSeqCls:
     def load_pretrain(self):
         self.model = TFBertForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
 
-    def map_example_to_dict(self, input_ids, attention_masks, token_type_ids, label):
+    def map_example_to_dict(self, input_ids, token_type_ids, attention_masks, label):
         return {
                    "input_ids": input_ids,
                    "token_type_ids": token_type_ids,
@@ -66,7 +66,7 @@ class BertSeqCls:
         model.load_weights(self.checkpoint_path)
         return model
 
-    def map_test_example_to_dict(self, input_ids, attention_masks, token_type_ids):
+    def map_test_example_to_dict(self, input_ids, token_type_ids, attention_masks):
         return {
             "input_ids": input_ids,
             "token_type_ids": token_type_ids,
